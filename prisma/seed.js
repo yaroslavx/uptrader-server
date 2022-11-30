@@ -29,6 +29,13 @@ async function seed() {
     },
   });
 
+  const columnDevelopment = await prisma.column.create({
+    data: {
+      title: 'Development',
+      projectId: project1.id,
+    },
+  });
+
   const columnDone = await prisma.column.create({
     data: {
       title: 'Done',

@@ -108,11 +108,18 @@ server.get('/tasks/:id', async (req, res) => {
 });
 
 server.put('/tasks/changeStatus/:taskId', async (req, res) => {
+  const { columnId } = await prisma.column.findFirst({
+    where: { title: req.params.status },
+    select: { id: true },
+  });
+
   return await commitToDb(
-    prisma.task.update({
+    prisma.task.updateMany({
       where: { id: req.params.taskId },
-      data: { status: req.body.status },
-      select: { status: true },
+      data: {
+        status: req.body.status,
+        columnId: columnId,
+      },
     })
   );
 });
