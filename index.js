@@ -29,8 +29,12 @@ const CURRENT_USER_ID = (
 const COMMENT_SELECT_FIELD = {
   id: true,
   message: true,
-  parentId: true,
   createdAt: true,
+  updatedAt: true,
+  userId: true,
+  taskId: true,
+  children: true,
+  parentId: true,
   user: {
     select: {
       id: true,
@@ -124,6 +128,18 @@ server.put('/tasks/changeStatus/:taskId', async (req, res) => {
   );
 });
 
+server.get('/users/:userId', async (req, res) => {
+  return await commitToDb(
+    prisma.user.findFirst({
+      where: { id: req.params.userId },
+      select: {
+        id: true,
+        name: true,
+      },
+    })
+  );
+});
+
 server.post('/tasks/:id/comments', async (req, res) => {
   if (req.body.message === '' || req.body.message == null) {
     return res.send(server.httpErrors.badRequest('Message is required'));
@@ -168,7 +184,7 @@ server.put('/tasks/:id/comments/:commentId', async (req, res) => {
   );
 });
 
-server.delete('/posts/:id/comments/:commentId', async (req, res) => {
+server.delete('/tasks/:id/comments/:commentId', async (req, res) => {
   const { userId } = await prisma.comment.findUnique({
     where: { id: req.params.commentId },
     select: { userId: true },
